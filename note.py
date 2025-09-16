@@ -7,6 +7,50 @@ source_root = r"D:\Work\Node Projects"
 destination_root = r"D:\Work\Node Projects\Project to Obsidian Note\ObsidianVault\Projects"
 log_path = os.path.join(destination_root, "skipped_folders.log")
 
+# Folders to ignore (system folders that shouldn't be processed)
+IGNORED_FOLDERS = {
+    # Version control systems
+    ".git", ".svn", ".hg",
+    
+    # Node.js and JavaScript build tools
+    "node_modules", "bower_components", ".npm", ".yarn",
+    
+    # Python
+    "__pycache__", ".pytest_cache", "venv", "env", ".venv", ".env",
+    
+    # Build outputs and distributions
+    "dist", "build", "out", "target", ".next", ".nuxt", 
+    ".output", "bundle", "release", "debug", "assets",
+    
+    # Test coverage and reports
+    "coverage", ".nyc_output", "htmlcov", ".reports",
+    
+    # Cache folders
+    ".cache", ".gradle", ".dart_tool", ".pub-cache", 
+    ".flutter-plugins", ".flutter-plugins-dependencies", ".expo",
+    
+    # Vendor folders (various languages)
+    "vendor", "vendors", "gems", "packages",
+    
+    # IDE and editor folders
+    ".idea", ".vscode", ".vs", ".code", 
+    ".settings", ".project", ".classpath",
+    
+    # OS generated
+    ".DS_Store", "Thumbs.db", ".Spotlight-V100", ".Trashes",
+    
+    # Flutter specific
+    "build", ".dart_tool", ".packages", ".flutter-plugins", 
+    ".flutter-plugins-dependencies", "pubspec.lock", "flutter", "ios", "android", "ios", "assets", "node_modules", "target", "build", "out", "dist", "coverage", ".gradle", ".dart_tool", ".packages", ".flutter-plugins", ".flutter-plugins-dependencies", "pubspec.lock", "flutter", "ios", "android", "assets", "node_modules", "target", "build", "out", "dist", "coverage", ".gradle", ".dart_tool", ".packages", ".flutter-plugins", ".flutter",
+    
+    # Android/iOS specific
+    "android/.gradle", "android/build", "ios/build", 
+    "android/app/build", "ios/Pods", "Pods",
+    
+    # Miscellaneous
+    "logs", "log", ".log", ".logs", "temp", "gsap", "howler"
+}
+
 # === SETUP ===
 os.makedirs(destination_root, exist_ok=True)
 skipped = []
@@ -37,6 +81,14 @@ created: {datetime.now().strftime('%Y-%m-%d')}
 
 # === MAIN ===
 for dirpath, dirnames, filenames in os.walk(source_root):
+    # Remove ignored folders from dirnames so os.walk doesn't traverse into them
+    dirnames[:] = [d for d in dirnames if d not in IGNORED_FOLDERS]
+    
+    # Skip processing if current directory is in ignored folders
+    folder_name = os.path.basename(dirpath)
+    if folder_name in IGNORED_FOLDERS:
+        continue
+        
     if "README.md" in filenames:
         readme_path = os.path.join(dirpath, "README.md")
         project_folder_name = os.path.basename(dirpath)
